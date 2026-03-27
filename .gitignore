@@ -1,0 +1,6 @@
+Wikipedia*.md
+.env
+.venv/
+*.apkg
+__pycache__/
+
