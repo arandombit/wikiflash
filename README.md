@@ -10,4 +10,4 @@ uv run main.py <input.md> [output.apkg] [--deck-name "My Deck"]
 
 ### Requirements
 
-Set an `ANTHROPIC_API_KEY` environment variable either through an .env file or in your shell
+Set an `ANTHROPIC_API_KEY` environment variable either through an .env file or in the command line.
