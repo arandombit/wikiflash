@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 import genanki
+import requests
 
 WIKI_API = "https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
 WIKI_EXTRACT_API = "https://en.wikipedia.org/w/api.php"
@@ -56,3 +57,30 @@ def parse_urls(filepath: str) -> list[tuple[str, str]]:
         seen.add(title)
         results.append((url, title))
   return results
+
+# ── Wikipedia fetch ───────────────────────────────────────────────────────────
+
+def fetch_wikipedia_extract(title: str) -> str | None:
+  """Fetch a plain-text extract for an article using the MediaWiki API."""
+  params = {
+    "action": "query",
+    "titles": title,
+    "prop": "extracts",
+    "exintro": False,
+    "explaintext": True,
+    "exsectionformat": "plain",
+    "format": "json",
+    "redirects": 1,
+  }
+  try:
+    resp = requests.get(WIKI_EXTRACT_API, params=params, timeout=10, headers={"User-Agent": "WikiFlash/1.0 (anki-card-generator)"})
+    resp.raise_for_status()
+    pages = resp.json().get("query", {}).get("pages", {})
+    for page in pages.values():
+      if "missing" in page:
+        return None
+      extract = page.get("extract", "").strip()
+      return extract[:MAX_EXTRACT_CHARS] if extract else None
+  except Exception as e:
+    print(f"  [warn] Wikipedia fetch failed for '{title}': {e}")
+    return None
