@@ -10,8 +10,8 @@ import requests
 
 WIKI_API = "https://en.wikipedia.org/api/rest_v1/page/summary/{title}"
 WIKI_EXTRACT_API = "https://en.wikipedia.org/w/api.php"
-REQUEST_DELAY = 0.5   # seconds between Wikipedia requests (be polite)
-MAX_EXTRACT_CHARS = 6000  # trim long articles before sending to Claude
+REQUEST_DELAY = 0.5  # seconds between Wikipedia requests
+MAX_EXTRACT_CHARS = 12000  # trim long articles before sending to Claude
 
 ANKI_MODEL = genanki.Model(
   1607392319,
