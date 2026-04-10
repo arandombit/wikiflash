@@ -22,6 +22,7 @@ ANKI_MODEL = genanki.Model(
     "qfmt": "{{Front}}",
     "afmt": "{{FrontSide}}<hr id='answer'>{{Back}}<br><small>{{Source}}</small>",
   }],
+  css=".card { text-align: center; display: flex; flex-direction: column; justify-content: center; min-height: 50vh; }",
 )
 
 # ── URL helpers ───────────────────────────────────────────────────────────────
