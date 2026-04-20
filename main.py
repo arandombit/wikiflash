@@ -41,7 +41,7 @@ def extract_article_title(url: str) -> str | None:
     # Skip category / special pages
     if re.search(r"/(Category|Special|Wikipedia|Help|Talk|File|Template):", path, re.I):
       return None
-    # /wiki/Article_Title  or  /en/Article_Title
+    # /wiki/Article_Title or /en/Article_Title
     match = re.match(r"^/(?:wiki/|[a-z]{2,3}/)(.+)$", path)
     if match:
       return unquote(match.group(1)).replace("_", " ")
