@@ -89,3 +89,42 @@ def fetch_wikipedia_extract(title: str) -> str | None:
   except Exception as e:
     print(f"  [warn] Wikipedia fetch failed for '{title}': {e}")
     return None
+
+# ── Claude Q&A generation ─────────────────────────────────────────────────────
+
+_claude = anthropic.Anthropic()
+
+SYSTEM_PROMPT = """\
+You are a precise flashcard author. Given a Wikipedia article extract, produce
+3–7 question-and-answer pairs that capture the most important facts.
+
+Rules:
+- Questions must be specific and unambiguous.
+- Answers should be concise (1–3 sentences).
+- Do NOT repeat the article title verbatim as the entire answer.
+- Output ONLY valid JSON: a list of objects with "q" and "a" keys.
+  Example: [{"q": "...", "a": "..."}, ...]
+- No markdown fences, no commentary outside the JSON array."""
+
+
+def generate_qa_pairs(title: str, extract: str) -> list[dict]:
+  user_msg = f"Article title: {title}\n\n{extract}"
+  try:
+    response = _claude.messages.create(
+      model="claude-opus-4-5",
+      max_tokens=1024,
+      system=SYSTEM_PROMPT,
+      messages=[{"role": "user", "content": user_msg}],
+    )
+    raw = response.content[0].text.strip()
+    # Strip markdown fences if Claude wraps the JSON anyway
+    if raw.startswith("```"):
+      raw = re.sub(r"^```[a-z]*\n?", "", raw)
+      raw = re.sub(r"\n?```$", "", raw)
+    pairs = json.loads(raw)
+    if isinstance(pairs, list):
+      return [p for p in pairs if isinstance(p, dict) and "q" in p and "a" in p]
+    return []
+  except Exception as e:
+    print(f"  [warn] Claude generation failed for '{title}': {e}")
+    return []
