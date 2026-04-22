@@ -128,3 +128,8 @@ def generate_qa_pairs(title: str, extract: str) -> list[dict]:
   except Exception as e:
     print(f"  [warn] Claude generation failed for '{title}': {e}")
     return []
+
+# ── Anki helpers ──────────────────────────────────────────────────────────────
+
+def make_note(question: str, answer: str, source_url: str) -> genanki.Note:
+  return genanki.Note(model=ANKI_MODEL, fields=[question, answer, f'<a href="{source_url}">{source_url}</a>'])
