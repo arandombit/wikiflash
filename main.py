@@ -133,3 +133,28 @@ def generate_qa_pairs(title: str, extract: str) -> list[dict]:
 
 def make_note(question: str, answer: str, source_url: str) -> genanki.Note:
   return genanki.Note(model=ANKI_MODEL, fields=[question, answer, f'<a href="{source_url}">{source_url}</a>'])
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def main() -> None:
+    parser = argparse.ArgumentParser(
+        description="Convert a markdown file of Wikipedia links into an Anki deck."
+    )
+    parser.add_argument("input", help="Markdown file containing one URL per line")
+    parser.add_argument(
+        "output",
+        nargs="?",
+        default="wikiflash.apkg",
+        help="Output .apkg file (default: wikiflash.apkg)",
+    )
+    parser.add_argument(
+        "--deck-name", default="WikiFlash", help="Anki deck name (default: WikiFlash)"
+    )
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=None,
+        metavar="N",
+        help="Only process the first N articles",
+    )
+    args = parser.parse_args()
