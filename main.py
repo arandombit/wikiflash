@@ -158,3 +158,40 @@ def main() -> None:
         help="Only process the first N articles",
     )
     args = parser.parse_args()
+
+    articles = parse_urls(args.input)
+    if args.limit is not None:
+        articles = articles[: args.limit]
+    if not articles:
+        print("No valid Wikipedia/Wikiwand URLs found in the input file.")
+        return
+
+    print(f"Found {len(articles)} article(s). Generating flashcards…")
+
+    deck = genanki.Deck(2059400110, args.deck_name)
+    total_cards = 0
+
+    for i, (url, title) in enumerate(articles, 1):
+        print(f"[{i}/{len(articles)}] {title}")
+
+        extract = fetch_wikipedia_extract(title)
+        if not extract:
+            print(f"  [skip] No extract available.")
+            time.sleep(REQUEST_DELAY)
+            continue
+
+        pairs = generate_qa_pairs(title, extract)
+        if not pairs:
+            print(f"  [skip] No Q&A pairs generated.")
+            time.sleep(REQUEST_DELAY)
+            continue
+
+        for pair in pairs:
+            deck.add_note(make_note(pair["q"], pair["a"], url))
+
+        total_cards += len(pairs)
+        print(f"  +{len(pairs)} card(s)  (total: {total_cards})")
+        time.sleep(REQUEST_DELAY)
+
+    genanki.Package(deck).write_to_file(args.output)
+    print(f"\nDone! {total_cards} card(s) written to '{args.output}'.")
