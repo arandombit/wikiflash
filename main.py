@@ -195,3 +195,6 @@ def main() -> None:
 
     genanki.Package(deck).write_to_file(args.output)
     print(f"\nDone! {total_cards} card(s) written to '{args.output}'.")
+
+if __name__ == "__main__":
+  main()
